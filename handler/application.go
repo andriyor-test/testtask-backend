@@ -5,10 +5,11 @@ import (
 	"github.com/andriyor/testtask-backend/models"
 	"github.com/andriyor/testtask-backend/repository"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
-func GetApplications(w http.ResponseWriter, r *http.Request) {
+func GetApplications(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	posts := repository.GetApplications()
 	respondWithJSON(w, http.StatusOK, posts)
@@ -17,14 +18,14 @@ func GetApplications(w http.ResponseWriter, r *http.Request) {
 func CreateApplication(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		panic(err.Error())
+		log.Fatalln(err)
 	}
 
 	var post models.Application
 	err = json.Unmarshal(body, &post)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
-		panic(err.Error())
+		log.Fatalln(err)
 	}
 
 	newPost := repository.CreateApplication(post)
@@ -36,5 +37,5 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	w.Write(response)
+	_, _ = w.Write(response)
 }
